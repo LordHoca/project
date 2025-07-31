@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login/Register UI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="form-toggle">
+      <button id="loginToggle" class="active">Login</button>
+      <button id="registerToggle">Register</button>
+    </div>
+
+    <form id="loginForm" class="form">
+      <input type="email" placeholder="you@example.com" required />
+      <input type="password" placeholder="Password" required />
+      <button class="main-btn">Login</button>
+      <p class="or">Or sign in with</p>
+      <div class="social-buttons">
+        <button class="google">Sign in with Google</button>
+        <button class="facebook">Sign in with Facebook</button>
+        <button class="twitter">Sign in with Twitter</button>
+      </div>
+    </form>
+
+    <form id="registerForm" class="form hidden">
+      <input type="text" placeholder="John Doe" required />
+      <input type="email" placeholder="you@example.com" required />
+      <input type="password" placeholder="Create a password" required />
+      <input type="password" placeholder="Repeat password" required />
+      <button class="main-btn">Register</button>
+      <p class="or">Or sign up with</p>
+      <div class="social-buttons">
+        <button class="google">Sign up with Google</button>
+        <button class="facebook">Sign up with Facebook</button>
+        <button class="twitter">Sign up with Twitter</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+

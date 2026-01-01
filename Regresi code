@@ -1,0 +1,33 @@
+import pandas as pede
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+df = pede.read_csv("Data Pasien penyakit liver.csv")
+
+x = df[['Age']]
+y = df['Albumin_and_Globulin_Ratio']
+x_train, x_test, y_train, y_test = train_test_split (x, y, test_size = 0.2, random_state = 42)
+
+model = LinearRegression()
+model.fit(x_train, y_train)
+
+y_pred = model.predict(x_test)
+
+r_squered = model.score(x_test, y_test)
+print('Metode Regresi Linear\n')
+print("R-squered : ", r_squered)
+
+plt.figure(figsize = (10,6))
+plt.scatter(x_test, y_test, label = 'Data Uji')
+plt.plot(x_test, y_pred, color = 'red', label = 'Prediksi')
+plt.xlabel('Usia')
+plt.ylabel('Albumin_and_Globulin_Ratio')
+plt.title('Prediksi kadar Albumin_and_Globulin_Ratio berdasarkan usia')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+usia_baru = [[49]]
+prediksi_Albumin_and_Globulin_Ratio = model.predict(usia_baru)
+print("Prediksi 'Albumin and Globulin Ratio' untuk pasien usia 49 tahun : ", prediksi_Albumin_and_Globulin_Ratio[0].round(3))

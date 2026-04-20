@@ -33,13 +33,13 @@ print("Membuat model CNN...")
 model = models.Sequential([
     layers.Rescaling(1./255, input_shape=(224, 224, 3)),
     
-    layers.Conv2D(16, 3, padding ='same', activation = 'relu'),
+    layers.Conv2D(16, 6, padding ='same', activation = 'relu'),
     layers.MaxPooling2D(),
     
-    layers.Conv2D(32, 3, padding ='same', activation = 'relu'),
+    layers.Conv2D(32, 6, padding ='same', activation = 'relu'),
     layers.MaxPooling2D(),
     
-    layers.Conv2D(64,3, padding='same', activation='relu'),
+    layers.Conv2D(64,6, padding='same', activation='relu'),
     layers.MaxPooling2D(),
     
     layers.Flatten(),
@@ -52,12 +52,19 @@ model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(),
               metrics=['accuracy'])
 
+penghenti_otomatis = tf.keras.callbacks.EarlyStopping(
+    monitor='val_accuracy',       # Yang dipantau adalah akurasi dari tebakan data baru
+    patience=5,                   # Berapa putaran AI diberi toleransi tidak ada peningkatan sebelum disetop
+    restore_best_weights=True     # SANGAT PENTING: Mengembalikan memori AI ke putaran dengan akurasi tertinggi
+)
+
 print('Melatih Model...')
-epochs=30
+epochs=100
 history = model.fit(
     train_dataset,
     validation_data = validasi_dataset,
-    epochs= epochs
+    epochs= epochs,
+    callbacks= [penghenti_otomatis]
 )
 
 print('Menyimpan Model...')

@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 
 # 1. Gunakan model dasar YOLOv11 nano (cepat dan ringan)
-model = YOLO('yolo11n.pt')
+model = YOLO('yolo26s.pt')
 
 # 2. Mulai proses belajar
 model.train(

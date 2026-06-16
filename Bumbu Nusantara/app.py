@@ -1,510 +1,280 @@
 import streamlit as st
-import cv2
-import numpy as np
-import pandas as pd
-from PIL import Image
 from ultralytics import YOLO
+import cv2
+from PIL import Image
+import numpy as np
 
-# ==================== KONFIGURASI HALAMAN ====================
-st.set_page_config(
-    page_title="RempahAI - Deteksi Bumbu Nusantara",
-    page_icon="🌿",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
+# Pengaturan Utama Halaman Streamlit
+st.set_page_config(page_title="Deteksi Bumbu Nusantara", page_icon="🌿", layout="wide")
 
-# ==================== CSS ====================
+# ==================== KONTROL CSS KUSTOM (SERAGAM & FIXED SIZE) ====================
 st.markdown("""
 <style>
-    /* Font & reset */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap');
+    /* Tema Dasar Dark Mode */
+    [data-testid="stAppViewContainer"] { background-color: #0A0F16; color: #E2E8F0; }
+    [data-testid="stSidebar"] { background-color: #111827; border-right: 1px solid #1E293B; }
     
-    * {
-        font-family: 'Inter', sans-serif;
+    /* Perataan Teks & Judul ke Tengah */
+    h1, h2, h3 { text-align: center !important; color: #10B981 !important; }
+    p, label { text-align: center !important; }
+    
+    /* Grid Tombol Utama */
+    .stButton>button { 
+        border-radius: 8px; 
+        border: 1px solid #10B981; 
+        color: #10B981; 
+        transition: 0.3s; 
+    }
+    .stButton>button:hover { background-color: #10B981; color: white; }
+    
+    /* --- KOTAK DESKRIPSI DIKUNCI AGAR UKURANNYA SAMA RATA (ANTI-MELAR) --- */
+    div[data-testid="stAlert"], div[data-testid="stNotification"], .stAlert {
+        height: 150px !important;       /* Mengunci tinggi seluruh kotak bumbu secara absolut */
+        min-height: 150px !important;
+        max-height: 150px !important;
+        overflow-y: auto !important;     /* Otomatis memunculkan scrollbar jika teks panjang */
+        padding: 14px !important;
+        border-radius: 10px !important;
     }
     
-    /* Warna utama */
-    :root {
-        --primary: #2E7D32;
-        --primary-light: #4CAF50;
-        --primary-dark: #1B5E20;
-        --secondary: #FF8F00;
-        --bg-light: #F8F9FA;
-        --card-white: #FFFFFF;
-        --text-dark: #1E293B;
-        --text-gray: #475569;
+    /* Format teks di dalam kotak deskripsi agar rapi dan rata kiri */
+    div[data-testid="stAlert"] p, div[data-testid="stNotification"] p {
+        text-align: left !important;     
+        margin-bottom: 4px !important;
     }
     
-    /* Sidebar premium - latar hijau gelap, teks putih kontras */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(135deg, #0F2B1D 0%, #1B5E20 100%);
-        padding-top: 2rem;
+    /* Desain scrollbar internal tipis agar estetik */
+    div[data-testid="stAlert"]::-webkit-scrollbar { width: 5px; }
+    div[data-testid="stAlert"]::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 10px; }
+    
+    /* --- FORMAT TAMPILAN GAMBAR BERDAMPINGAN DAN TENGAH --- */
+    [data-testid="stImage"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
-    [data-testid="stSidebar"] * {
-        color: white !important;
-    }
-    [data-testid="stSidebar"] .stRadio label {
-        font-weight: 500;
-        font-size: 1rem;
-        padding: 0.5rem;
+    [data-testid="stImage"] img {
+        max-height: 320px !important;    /* Menjaga tinggi gambar seimbang */
+        object-fit: contain !important;  
         border-radius: 12px;
-        transition: 0.2s;
-    }
-    [data-testid="stSidebar"] .stRadio label:hover {
-        background: rgba(255,255,255,0.15);
-    }
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] {
-        background: rgba(255,255,255,0.1);
-        border-radius: 20px;
-        padding: 0.75rem;
-    }
-    [data-testid="stSidebar"] .stCaption, 
-    [data-testid="stSidebar"] .stMarkdown p {
-        color: rgba(255,255,255,0.85) !important;
+        border: 2px solid #1E293B;
+        margin: 0 auto !important;
     }
     
-    /* Tombol modern */
-    .stButton > button {
-        background: linear-gradient(95deg, #2E7D32, #4CAF50);
-        color: white !important;
-        border: none;
-        border-radius: 40px;
-        padding: 0.5rem 1.8rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(46,125,50,0.3);
-        background: linear-gradient(95deg, #1B5E20, #2E7D32);
-    }
-    
-    /* Card glassmorphism */
-    .glass-card {
-        background: rgba(255,255,255,0.9);
-        backdrop-filter: blur(10px);
-        border-radius: 28px;
-        padding: 1.5rem;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.05);
-        border: 1px solid rgba(255,255,255,0.5);
-        transition: all 0.3s;
-        margin-bottom: 1.5rem;
-    }
-    .glass-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15);
-    }
-    
-    /* Hero header */
-    .hero-header {
-        background: linear-gradient(105deg, #1B5E20 0%, #2E7D32 50%, #4CAF50 100%);
-        padding: 2rem;
-        border-radius: 40px;
-        color: white;
-        margin-bottom: 2rem;
+    .img-title {
         text-align: center;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
-        position: relative;
-        overflow: hidden;
-    }
-    .hero-header h1, .hero-header p {
-        color: white !important;
-    }
-    .hero-header::after {
-        content: "🌿";
-        font-size: 180px;
-        position: absolute;
-        bottom: -30px;
-        right: -30px;
-        opacity: 0.1;
-        pointer-events: none;
-    }
-    
-    /* Grid tim */
-    .team-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-    }
-    .team-item {
-        background: white;
-        border-radius: 20px;
-        padding: 1rem 1.5rem;
-        text-align: center;
-        min-width: 140px;
-        transition: 0.2s;
-        border: 1px solid #E2E8F0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .team-item:hover {
-        background: #F1F8E9;
-        transform: scale(1.02);
-        border-color: #4CAF50;
-    }
-    .team-name {
-        font-weight: 700;
-        font-size: 1.1rem;
-        color: #1B5E20;
-    }
-    .team-nim {
-        font-size: 0.75rem;
-        color: #475569;
-        font-family: monospace;
-    }
-    
-    /* Metric cards */
-    .metric-modern {
-        background: white;
-        border-radius: 24px;
-        padding: 1.2rem;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        border-bottom: 3px solid #4CAF50;
-    }
-    .metric-number {
-        font-size: 2.4rem;
-        font-weight: 800;
-        color: #2E7D32;
-    }
-    .metric-label {
-        font-size: 0.85rem;
-        color: #475569;
-        margin-top: 0.5rem;
-    }
-    
-    /* Search bar */
-    .search-wrapper input {
-        border-radius: 60px !important;
-        border: 1px solid #CBD5E1 !important;
-        padding: 0.7rem 1.5rem !important;
-        font-size: 1rem !important;
-        background: white !important;
-        transition: 0.2s;
-    }
-    .search-wrapper input:focus {
-        border-color: #4CAF50 !important;
-        box-shadow: 0 0 0 3px rgba(76,175,80,0.2);
-    }
-    
-    /* Rempah card */
-    .rempah-card {
-        background: #FFFFFF;
-        border-radius: 20px;
-        padding: 1rem;
-        margin-bottom: 0.8rem;
-        border-left: 5px solid #4CAF50;
-        transition: 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    .rempah-card:hover {
-        background: #F7FEF7;
-        transform: translateX(4px);
-        box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
-    }
-    .rempah-title {
-        font-weight: 700;
-        font-size: 1.1rem;
-        color: #1B5E20;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    /* Info badge */
-    .info-badge {
-        background: #E8F5E9;
-        padding: 1rem 1.2rem;
-        border-radius: 20px;
-        color: #1B5E20;
-        font-size: 0.9rem;
-        border-left: 4px solid #2E7D32;
-        margin: 1rem 0;
-    }
-    
-    /* Footer */
-    .footer {
-        text-align: center;
-        margin-top: 3rem;
-        padding: 1.5rem;
-        font-size: 0.75rem;
-        color: #64748B;
-        border-top: 1px solid #E2E8F0;
-    }
-    
-    /* Expander */
-    .streamlit-expanderHeader {
-        background-color: #F8FAFC;
-        border-radius: 30px;
-        font-weight: 500;
-    }
-    
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: #F1F5F9;
-        border-radius: 40px;
-        padding: 4px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 40px;
-        padding: 0.5rem 1.2rem;
-        font-weight: 500;
-    }
-    
-    /* File uploader text */
-    .stFileUploader label {
-        color: #1E293B !important;
-        font-weight: 500;
-    }
-    .stFileUploader .uploadedFileName {
-        color: #1E293B !important;
-    }
-    
-    /* Camera input label */
-    .stCameraInput label {
-        color: #1E293B !important;
-    }
-    
-    /* Spinner text */
-    .stSpinner > div {
-        color: #2E7D32 !important;
+        margin-bottom: 8px;
+        font-size: 1.15rem;
+        font-weight: bold;
+        color: #E2E8F0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== DATABASE REMPAH ====================
-REMPAH_DB = {
-    "Kluwek": "Biji buah keluarga pohon jati dengan cita rasa kuat dan sedikit pahit untuk rawon/soto.",
-    "Wijen": "Biji kecil dengan rasa gurih, biasanya untuk topping atau olahan masakan Asia.",
-    "Kemukus": "Lada tradisional dengan rasa pedas halus, sering untuk jamu.",
-    "Saffron": "Benang merah bunga dengan aroma premium, untuk warna kuning emas dan aroma masakan.",
-    "Serai": "Tanaman dengan aroma lemon segar, esensial untuk kari dan sup.",
-    "Kemiri": "Biji keras untuk mengentalkan dan memperkaya rasa bumbu dasar.",
-    "Lengkuas": "Rimpang dengan aroma khas dan rasa pedas getir untuk masakan bersantan.",
-    "Kunyit": "Rimpang kuning keemasan, anti-inflamasi alami dan pewarna kuning masakan.",
-    "Pala": "Biji dengan rasa hangat, manis, dan pedas untuk masakan daging atau kue.",
-    "Vanili": "Polong dengan aroma manis khas, digunakan untuk dessert dan kue.",
-    "Lada": "Bumbu universal dengan rasa pedas hangat yang kuat.",
-    "Kencur": "Rimpang dengan rasa hangat dan aroma tajam untuk sambal atau jamu.",
-    "Kayu Secang": "Kayu merah yang memberikan warna merah alami pada minuman.",
-    "Kayu Manis": "Kulit pohon dengan aroma manis-hangat untuk masakan savory maupun manis.",
-    "Kapulaga": "Biji dengan rasa campuran manis-pedas-mint, kunci aroma kari.",
-    "Jinten": "Biji kecil dengan rasa hangat-pedas, khas untuk masakan berbumbu tajam.",
-    "Daun Jeruk": "Daun dengan aroma jeruk segar yang tajam untuk menetralkan bau amis.",
-    "Jahe": "Rimpang pedas hangat untuk menghangatkan tubuh dan bumbu masakan.",
-    "Daun Ketumbar": "Daun dengan aroma segar unik, sering digunakan sebagai garnish.",
-    "Daun Salam": "Daun dengan aroma harum lembut untuk menyedapkan nasi dan masakan.",
-    "Biji Ketumbar": "Biji dengan rasa manis-pedas untuk bumbu dasar dan acar.",
-    "Cengkeh": "Bunga kering dengan aroma sangat kuat untuk masakan daging/minuman.",
-    "Bawang Merah": "Bumbu dasar utama dengan rasa manis tajam saat dimasak.",
-    "Bawang Bombay": "Umbi besar dengan rasa manis saat dimasak, untuk volume masakan.",
-    "Daun Kemangi": "Daun hijau dengan aroma harum khas untuk sambal atau lalapan.",
-    "Asam Jawa": "Pasta buah dengan rasa asam kuat untuk menyeimbangkan rasa masakan.",
-    "Bunga Lawang": "Bunga berbentuk bintang dengan aroma khas mirip licorice.",
-    "Adas": "Biji dengan aroma manis untuk minuman herbal atau masakan.",
-    "Bawang Putih": "Umbi dasar dengan rasa tajam dan aroma kuat saat digoreng.",
-    "Andaliman": "Lada dengan sensasi menggelitik (kebas) khas masakan Sumatera.",
-    "Temulawak": "Rimpang dengan rasa pahit-hangat, populer untuk jamu kesehatan."
-}
-
+# Memuat Model YOLO dengan Fitur Cache
 @st.cache_resource
 def load_model():
-    return YOLO("best.pt")
+    return YOLO('best2.pt')
 
-def resize_image_for_inference(image, max_size=640):
-    """Resize gambar agar cepat diproses model"""
-    width, height = image.size
-    if max(width, height) > max_size:
-        ratio = max_size / max(width, height)
-        new_size = (int(width * ratio), int(height * ratio))
-        return image.resize(new_size, Image.Resampling.LANCZOS)
-    return image
+model = load_model()
 
-def get_detection_info(results):
-    detections = []
-    if results[0].boxes is not None:
-        for box in results[0].boxes:
-            cls = int(box.cls[0])
-            conf = float(box.conf[0])
-            name = results[0].names[cls]
-            detections.append({"name": name, "confidence": conf})
-    return detections
+# ==================== DATABASE LENGKAP 31 BUMBU NUSANTARA ====================
+SPICE_DATA = {
+    "adas": {"Manfaat": "Mengatasi kembung & gangguan pencernaan, serta membantu meredakan kolik.", "Penyimpanan": "Wadah kedap udara, simpan di tempat sejuk dan terlindung dari sinar matahari langsung.", "Tumbuh": "Dataran tinggi dengan iklim sejuk dan tanah yang gembur."},
+    "andaliman": {"Manfaat": "Antioksidan tinggi, penambah getir khas masakan Batak, antimikroba alami.", "Penyimpanan": "Dalam freezer agar aroma dan kesegarannya tidak hilang.", "Tumbuh": "Dataran tinggi, tanah subur berhumus."},
+    "asam-jawa": {"Manfaat": "Melancarkan pencernaan, meredakan demam, dan sebagai antiseptik alami.", "Penyimpanan": "Suhu ruang dalam wadah kering dan tertutup.", "Tumbuh": "Dataran rendah hingga menengah."},
+    "bawang-bombay": {"Manfaat": "Menjaga kesehatan jantung, mengontrol kadar gula darah, dan menurunkan risiko kanker.", "Penyimpanan": "Tempat kering, terbuka dengan sirkulasi udara baik, jangan digabung dengan kentang.", "Tumbuh": "Iklim sedang hingga subtropis, membutuhkan intensitas cahaya matahari penuh."},
+    "bawang-merah": {"Manfaat": "Menurunkan kadar kolesterol jahat, menjaga tekanan darah, dan kaya antioksidan.", "Penyimpanan": "Digantung di tempat kering, hindari tempat lembab atau kantong plastik tertutup.", "Tumbuh": "Dataran rendah, cuaca cenderung kering dan berangin."},
+    "bawang-putih": {"Manfaat": "Antibiotik dan antibakteri alami, memperkuat imunitas tubuh, menurunkan tekanan darah.", "Penyimpanan": "Tempat kering yang gelap dengan sirkulasi baik agar tidak tumbuh tunas.", "Tumbuh": "Dataran tinggi dengan kondisi suhu udara cenderung dingin."},
+    "biji-ketumbar": {"Manfaat": "Mengurangi peradangan, menurunkan kadar gula darah, meredakan nyeri sendi.", "Penyimpanan": "Wadah kaca tertutup rapat di tempat sejuk kering.", "Tumbuh": "Dataran rendah hingga menengah dengan paparan sinar matahari penuh."},
+    "bunga-lawang": {"Manfaat": "Meredakan gejala flu & batuk, meningkatkan sirkulasi darah, menjaga kesehatan pencernaan.", "Penyimpanan": "Wadah kedap udara, jauhkan dari kelembaban.", "Tumbuh": "Kawasan tropis dan subtropis, dataran menengah."},
+    "cengkeh": {"Manfaat": "Pereda alami untuk nyeri gigi, menjaga kesehatan hati, mengontrol kadar gula darah.", "Penyimpanan": "Tempat kering, sejuk, dan terhindar dari panas matahari langsung.", "Tumbuh": "Dataran menengah hingga tinggi dekat daerah pantai/kepulauan."},
+    "daun-jeruk": {"Manfaat": "Aromaterapi penenang pikiran, mendetoksifikasi racun tubuh, menjaga kesehatan mulut.", "Penyimpanan": "Bungkus plastik kedap udara lalu simpan di dalam freezer.", "Tumbuh": "Dataran rendah hingga menengah, tanah berdrainase baik."},
+    "daun-kemangi": {"Manfaat": "Menyegarkan aroma napas, meredakan stres, merawat kesehatan kulit.", "Penyimpanan": "Masukkan ke dalam wadah berisi sedikit air atau bungkus tisu di kulkas.", "Tumbuh": "Dataran rendah, cuaca panas dengan air yang cukup."},
+    "daun-ketumbar": {"Manfaat": "Detoksifikasi zat logam berat dalam tubuh, menurunkan kecemasan, menyehatkan mata.", "Penyimpanan": "Dibalut kertas tisu kering lalu masukkan ke dalam kulkas.", "Tumbuh": "Dataran tinggi dengan kondisi tanah lembab dan subur."},
+    "daun-salam": {"Manfaat": "Menurunkan kadar gula darah dan kolesterol, menjaga kesehatan jantung.", "Penyimpanan": "Keringkan daun secara alami, simpan dalam wadah kedap udara.", "Tumbuh": "Dataran rendah hingga area pegunungan setinggi 1500 mdpl."},
+    "jahe": {"Manfaat": "Meredakan mual, mencegah mabuk perjalanan, serta memberikan efek kehangatan yang kuat pada seluruh tubuh setelah beraktivitas seharian.", "Penyimpanan": "Tempat sejuk kering terbuka, jangan dimasukkan ke dalam freezer atau kantong plastik basah.", "Tumbuh": "Dataran menengah, tanah gembur dengan sirkulasi udara yang baik."},
+    "jinten": {"Manfaat": "Melancarkan metabolisme tubuh, meningkatkan imun, membantu manajemen berat badan.", "Penyimpanan": "Wadah kedap udara di tempat sejuk.", "Tumbuh": "Dataran rendah hingga menengah dengan kondisi tanah kering."},
+    "kapulaga": {"Manfaat": "Mencegah bau mulut, mengontrol tekanan darah, menjaga kesehatan paru-paru.", "Penyimpanan": "Wadah kaca kedap udara agar aroma khasnya awet.", "Tumbuh": "Dataran menengah beriklim basah/lembab."},
+    "kayu-manis": {"Manfaat": "Mengontrol gula darah, anti-inflamasi kuat, kaya akan antioksidan.", "Penyimpanan": "Tempat gelap, kering, dan sejuk dalam wadah tertutup.", "Tumbuh": "Dataran menengah ke atas beriklim lembab."},
+    "kayu-secang": {"Manfaat": "Antioksidan penangkal radikal bebas, melegakan pernapasan dan radang tenggorokan.", "Penyimpanan": "Simpan serutan kayu di tempat kering.", "Tumbuh": "Dataran rendah hingga menengah, kondisi tanah kering berkelikir."},
+    "kemiri": {"Manfaat": "Sumber lemak sehat, menjaga kekuatan rambut, meredakan diare.", "Penyimpanan": "Tempat kering, hindari area lembab agar tidak cepat berjamur.", "Tumbuh": "Dataran rendah hingga menengah di iklim tropis."},
+    "kemukus": {"Manfaat": "Mengatasi asma, bronkitis, serta gangguan pernapasan lainnya.", "Penyimpanan": "Wadah kering kedap udara.", "Tumbuh": "Tropis, dataran menengah berpohon pelindung."},
+    "kencur": {"Manfaat": "Meredakan batuk berdahak, mengatasi radang tenggorokan, serta menjadi penambah stamina tubuh yang sangat efektif secara alami.", "Penyimpanan": "Cukup letakkan di tempat kering pada suhu ruang terbuka dan hindari menyimpan di dalam kulkas.", "Tumbuh": "Dataran rendah hingga area pekarangan rumah berkapasitas ketinggian maksimal 1000 mdpl."},
+    "kluwek": {"Manfaat": "Pengawet makanan alami, memiliki kandungan zat anti-bakteri, menurunkan kolesterol.", "Penyimpanan": "Tempat kering terbuka, jangan dikupas kulitnya sebelum dipakai.", "Tumbuh": "Daerah tropis, tanah basah dan lembab."},
+    "kunyit": {"Manfaat": "Anti-inflamasi alami, menjaga kesehatan fungsi hati (liver), meringankan gejala maag.", "Penyimpanan": "Simpan di tempat kering terbuka atau dikubur dalam pasir bersih.", "Tumbuh": "Dataran rendah hingga menengah, wilayah tropis."},
+    "lada": {"Manfaat": "Melancarkan sirkulasi darah, membantu menurunkan berat badan, meredakan hidung tersumbat.", "Penyimpanan": "Wadah kaca tertutup rapat di tempat gelap kering.", "Tumbuh": "Iklim tropis basah dengan kelembaban tinggi."},
+    "lengkuas": {"Manfaat": "Agen antijamur dan antibakteri, meredakan radang sendi, menyehatkan lambung.", "Penyimpanan": "Dibalut dengan kertas koran/tisu, letakkan di suhu ruang.", "Tumbuh": "Tropis, dataran rendah dengan tanah gembur."},
+    "pala": {"Manfaat": "Mengatasi insomnia (susah tidur), menenangkan sistem saraf, mendetoksifikasi tubuh.", "Penyimpanan": "Wadah kedap udara di tempat sejuk kering.", "Tumbuh": "Dataran rendah kepulauan, iklim panas lembab."},
+    "saffron": {"Manfaat": "Antidepresan alami penenang suasana hati, meningkatkan memori, mengurangi gejala PMS.", "Penyimpanan": "Wadah kaca kecil kedap udara, simpan di tempat sangat kering.", "Tumbuh": "Iklim kering gersang, kawasan sub-tropis."},
+    "serai": {"Manfaat": "Antioksidan penangkal kolesterol, relaksasi otot saraf, mengurangi kembung.", "Penyimpanan": "Simpan dalam kulkas setelah dibersihkan pangkalnya.", "Tumbuh": "Tropis, sangat adaptif di berbagai jenis tanah."},
+    "temulawak": {"Manfaat": "Menjaga kesehatan fungsi hati (liver), menambah nafsu makan anak, antiradang.", "Penyimpanan": "Tempat kering sejuk pada suhu ruang.", "Tumbuh": "Dataran rendah hingga menengah, tanah gembur."},
+    "vanili": {"Manfaat": "Menenangkan pikiran (efek relaksasi), menjaga kesehatan jantung, anti-inflamasi.", "Penyimpanan": "Wadah kaca kedap udara, lapisi kertas minyak, tempat gelap.", "Tumbuh": "Dataran menengah, iklim tropis basah/lembab."},
+    "wijen": {"Manfaat": "Menjaga kekuatan tulang dan gigi, sumber protein nabati, menurunkan tekanan darah.", "Penyimpanan": "Wadah kedap udara, taruh di tempat sejuk kering.", "Tumbuh": "Dataran rendah, cuaca panas dengan curah hujan rendah."}
+}
 
-# ==================== SIDEBAR ====================
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/1998/1998598.png", width=80)
-    st.title("🌿 RempahAI")
-    st.markdown("**Deteksi 31 rempah Nusantara**")
+def predict_spices(image_pil):
+    results = model.predict(source=image_pil, conf=0.25)
+    res_plotted = results[0].plot()
+    res_rgb = cv2.cvtColor(res_plotted, cv2.COLOR_BGR2RGB) # Memastikan konversi warna agar gambar tidak biru
+    res_image = Image.fromarray(res_rgb)
+    detected = [model.names[int(cls)] for cls in results[0].boxes.cls.tolist()]
+    return res_image, detected
+
+# Menu Navigasi Samping (Sidebar)
+menu = st.sidebar.radio("Navigasi", ["📊 Dashboard", "🔍 Deteksi Bumbu", "📖 Ensiklopedia"])
+
+# ==================== 1. MENU DASHBOARD ====================
+if menu == "📊 Dashboard":
+    st.title("🌿 Dashboard Bumbu Nusantara")
+    
+    col_stat1, col_stat2 = st.columns(2)
+    with col_stat1:
+        st.metric("Total Bumbu Terlatih", "31 Bumbu")
+    with col_stat2:
+        st.metric("Status Sistem", "Siap Digunakan")
+        
     st.markdown("---")
-    menu = st.radio(
-        "📌 Navigasi",
-        ["🏠 Dashboard", "🔍 Deteksi Bumbu", "📖 Panduan Rempah"],
-        index=0,
-        label_visibility="collapsed"
-    )
-    st.markdown("---")
-    st.caption("✨ Versi 2.0 • YOLOv8")
+    st.markdown("### 🗂️ Menu Daftar Bumbu Nusantara")
+    st.info("Klik pada nama bumbu di bawah ini untuk melihat detail khasiat, penyimpanan, dan habitat tumbuhnya.")
 
-# ==================== DASHBOARD ====================
-if menu == "🏠 Dashboard":
-    st.markdown("""
-    <div class="hero-header">
-        <h1>📦 Dashboard Deteksi Bumbu AI</h1>
-        <p style="font-size:1.1rem; opacity:0.95;">Identifikasi rempah secara instan dengan kecerdasan buatan</p>
-    </div>
-    """, unsafe_allow_html=True)
+    bumbu_list = sorted(SPICE_DATA.keys())
+    kolom = st.columns(4)
     
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.markdown("""
-        <div class="metric-modern">
-            <div class="metric-number">31</div>
-            <div class="metric-label">Jenis Rempah</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown("""
-        <div class="metric-modern">
-            <div class="metric-number">YOLOv8</div>
-            <div class="metric-label">Model AI</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col3:
-        st.markdown("""
-        <div class="metric-modern">
-            <div class="metric-number">⚡ Real-time</div>
-            <div class="metric-label">Deteksi Cepat</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    st.markdown("### 👥 Tim Pengembang")
-    
-    tim = [
-        ("Fauzan", "15240205", "👨‍🍳"),
-        ("Alik", "15240008", "👩‍🍳"),
-        ("Juan", "15240081", "🧑‍🍳"),
-        ("Rama", "15240098", "👨‍🍳"),
-        ("Dzakmal", "15240271", "👨‍🍳")
-    ]
-    
-    cols = st.columns(len(tim))
-    for idx, (nama, nim, emoji) in enumerate(tim):
-        with cols[idx]:
-            st.markdown(f"""
-            <div class="team-item">
-                <div style="font-size:2rem;">{emoji}</div>
-                <div class="team-name">{nama}</div>
-                <div class="team-nim">{nim}</div>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <div class="info-badge">
-        🌟 <strong>Keunggulan Aplikasi</strong><br>
-        • Model YOLO terlatih pada dataset rempah lokal<br>
-        • Akurasi tinggi & deteksi multi-kelas<br>
-        • Cocok untuk koki, peneliti, dan pecinta kuliner
-    </div>
-    """, unsafe_allow_html=True)
+    if "pilihan_dashboard" not in st.session_state:
+        st.session_state.pilihan_dashboard = None
 
-# ==================== DETEKSI ====================
+    for index, bumbu in enumerate(bumbu_list):
+        nama_tombol = bumbu.replace("-", " ").title()
+        with kolom[index % 4]:
+            if st.button(nama_tombol, key=f"btn_{bumbu}", use_container_width=True):
+                st.session_state.pilihan_dashboard = bumbu
+
+    if st.session_state.pilihan_dashboard:
+        selected_bumbu = st.session_state.pilihan_dashboard
+        info = SPICE_DATA[selected_bumbu]
+        nama_tampil = selected_bumbu.replace("-", " ").title()
+        
+        st.markdown("---")
+        st.markdown(f"### 📋 Detail Informasi: {nama_tampil}")
+        
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            st.warning(f"**✨ Manfaat:**\n\n{info['Manfaat']}")
+        with c2:
+            st.info(f"**📦 Cara Penyimpanan:**\n\n{info['Penyimpanan']}")
+        with c3:
+            st.success(f"**🗺️ Habitat Tumbuh:**\n\n{info['Tumbuh']}")
+
+# ==================== 2. MENU DETEKSI BUMBU (SIMETRIS BERDAMPINGAN) ====================
 elif menu == "🔍 Deteksi Bumbu":
-    st.markdown("""
-    <div class="hero-header">
-        <h1>📸 Deteksi Bumbu Masak</h1>
-        <p>Upload gambar atau foto langsung, AI akan mengenali rempahnya</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.title("🔍 Deteksi Bumbu")
+    tab1, tab2 = st.tabs(["🖼️ Upload", "📸 Kamera"])
     
-    model = load_model()
-    
-    tab1, tab2 = st.tabs(["📁 Upload Gambar", "📱 Kamera Langsung"])
-    
-    file_gambar = None
+    # --- TAB 1: UPLOAD FOTO ---
     with tab1:
-        file_gambar = st.file_uploader("Pilih foto (JPG/PNG)", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
-    with tab2:
-        file_gambar = st.camera_input("Ambil foto dengan kamera", label_visibility="collapsed")
-    
-    if file_gambar:
-        col_img, col_res = st.columns(2, gap="medium")
+        file = st.file_uploader("Upload Foto Bumbu", type=["jpg", "png", "jpeg"])
         
-        with col_img:
-            st.markdown("##### 🖼️ Gambar Asli")
-            img = Image.open(file_gambar).convert('RGB')
-            st.image(img, use_column_width=True)
-        
-        with col_res:
-            st.markdown("##### 🧠 Hasil Deteksi AI")
-            # Resize gambar untuk percepatan
-            img_resized = resize_image_for_inference(img, max_size=640)
-            with st.spinner("⏳ Memproses gambar dengan model YOLO (gambar di-resize untuk kecepatan)..."):
-                results = model(img_resized, imgsz=320)  # imgsz kecil untuk cepat
-                detections = get_detection_info(results)
-                plot_img = results[0].plot()
-                st.image(plot_img, use_column_width=True, channels="BGR")
+        if file:
+            image_pil = Image.open(file).convert('RGB')
+            
+            # Pratinjau awal tepat di tengah
+            col_init1, col_init2, col_init3 = st.columns([1, 2, 1])
+            with col_init2:
+                st.markdown("<h3 class='img-title'>📷 Pratinjau Foto</h3>", unsafe_allow_html=True)
+                st.image(image_pil)
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("Analisis Foto", key="btn_analisis_foto", use_container_width=True):
+                with st.spinner("Menganalisis bumbu..."):
+                    res, labels = predict_spices(image_pil)
                 
-                if detections:
-                    st.success(f"✅ Ditemukan {len(detections)} rempah")
-                    for d in detections:
-                        st.markdown(f"- 🌿 **{d['name']}** (keyakinan: {d['confidence']:.2%})")
-                else:
-                    st.info("Tidak ada rempah yang terdeteksi. Coba gambar lain dengan pencahayaan lebih baik.")
-    else:
-        st.markdown("""
-        <div class="info-badge">
-            💡 <strong>Tips optimal</strong><br>
-            • Gunakan gambar dengan latar polos dan cahaya terang<br>
-            • Pastikan rempah tidak tertutup objek lain<br>
-            • Format yang didukung: JPG, PNG
-        </div>
-        """, unsafe_allow_html=True)
+                # RE-LAYOUT: POSISI BERDAMPINGAN HORIZONTAL PAS DI TENGAH
+                st.markdown("<br>", unsafe_allow_html=True)
+                col_u1, col_u2, col_u3, col_u4 = st.columns([0.5, 4, 4, 0.5])
+                with col_u2:
+                    st.markdown("<h3 class='img-title'>📷 Foto Asli</h3>", unsafe_allow_html=True)
+                    st.image(image_pil)
+                with col_u3:
+                    st.markdown("<h3 class='img-title'>🎯 Hasil Deteksi</h3>", unsafe_allow_html=True)
+                    st.image(res)
+                
+                st.markdown("<br>### 📋 Informasi Lengkap Bumbu Terdeteksi", unsafe_allow_html=True)
+                if not labels:
+                    st.warning("Tidak ada bumbu yang terdeteksi.")
+                
+                for l in set(labels):
+                    key_label = l.lower().replace(" ", "-")
+                    info = SPICE_DATA.get(key_label)
+                    if info:
+                        with st.expander(f"🌿 {l.replace('-', ' ').title()}", expanded=True):
+                            det_c1, det_c2, det_c3 = st.columns(3)
+                            with det_c1:
+                                st.warning(f"**✨ Manfaat:**\n\n{info['Manfaat']}")
+                            with det_c2:
+                                st.info(f"**📦 Cara Penyimpanan:**\n\n{info['Penyimpanan']}")
+                            with det_c3:
+                                st.success(f"**🗺️ Habitat Tumbuh:**\n\n{info['Tumbuh']}")
 
-# ==================== PANDUAN REMPAH ====================
-elif menu == "📖 Panduan Rempah":
-    st.markdown("""
-    <div class="hero-header">
-        <h1>📚 Ensiklopedia Rempah Nusantara</h1>
-        <p>Pelajari 31 jenis bumbu dapur tradisional Indonesia</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown('<div class="search-wrapper">', unsafe_allow_html=True)
-    query = st.text_input("🔍 Cari rempah", placeholder="Contoh: jahe, kunyit, lada...", label_visibility="collapsed")
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    daftar_rempah = sorted(REMPAH_DB.keys())
-    if query:
-        daftar_rempah = [nama for nama in daftar_rempah if query.lower() in nama.lower()]
-    
-    if not daftar_rempah:
-        st.warning("Rempah tidak ditemukan. Coba kata kunci lain.")
-    else:
-        st.caption(f"Menampilkan {len(daftar_rempah)} dari {len(REMPAH_DB)} rempah")
+    # --- TAB 2: KAMERA LIVE ---
+    with tab2:
+        col_c1, col_c2, col_c3 = st.columns([1, 2, 1])
+        with col_c2:
+            st.markdown("<h3 class='img-title'>📸 Kamera Live</h3>", unsafe_allow_html=True)
+            cam = st.camera_input("Ambil Foto Bumbu", label_visibility="collapsed")
         
-        cols = st.columns(3)
-        for idx, nama in enumerate(daftar_rempah):
-            with cols[idx % 3]:
-                st.markdown(f"""
-                <div class="rempah-card">
-                    <div class="rempah-title">
-                        <span>🌿</span> {nama}
-                    </div>
-                    <div style="font-size:0.85rem; color:#334155; margin-top:0.5rem;">
-                        {REMPAH_DB[nama][:110]}{'...' if len(REMPAH_DB[nama]) > 110 else ''}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                with st.expander("📖 Detail selengkapnya"):
-                    st.write(REMPAH_DB[nama])
-                    st.caption("✨ Sering digunakan dalam masakan tradisional & jamu")
+        if cam:
+            image_pil = Image.open(cam).convert('RGB')
+            with st.spinner("Menganalisis bumbu..."):
+                res, labels = predict_spices(image_pil)
+            
+            # RE-LAYOUT KAMERA: BERDAMPINGAN HORIZONTAL PAS DI TENGAH
+            st.markdown("<br>", unsafe_allow_html=True)
+            col_cr1, col_cr2, col_cr3, col_cr4 = st.columns([0.5, 4, 4, 0.5])
+            with col_cr2:
+                st.markdown("<h3 class='img-title'>📷 Foto Asli</h3>", unsafe_allow_html=True)
+                st.image(image_pil)
+            with col_cr3:
+                st.markdown("<h3 class='img-title'>🎯 Hasil Deteksi Kamera</h3>", unsafe_allow_html=True)
+                st.image(res)
+            
+            st.markdown("---")
+            st.markdown("### 📋 Informasi Lengkap Bumbu Terdeteksi")
+            if not labels:
+                st.warning("Tidak ada bumbu yang terdeteksi.")
+                
+            for l in set(labels):
+                key_label = l.lower().replace(" ", "-")
+                info = SPICE_DATA.get(key_label)
+                
+                if info:
+                    with st.expander(f"🌿 {l.replace('-', ' ').title()}", expanded=True):
+                        det_c1, det_c2, det_c3 = st.columns(3)
+                        with det_c1:
+                            st.warning(f"**✨ Manfaat:**\n\n{info['Manfaat']}")
+                        with det_c2:
+                            st.info(f"**📦 Cara Penyimpanan:**\n\n{info['Penyimpanan']}")
+                        with det_c3:
+                            st.success(f"**🗺️ Habitat Tumbuh:**\n\n{info['Tumbuh']}")
 
-# ==================== FOOTER ====================
-st.markdown("""
-<div class="footer">
-    © 2025 RempahAI — Deteksi Bumbu Cerdas | Dibangun dengan Streamlit & YOLOv8
-</div>
-""", unsafe_allow_html=True)
+# ==================== 3. MENU ENSIKLOPEDIA ====================
+elif menu == "📖 Ensiklopedia":
+    st.title("📖 Ensiklopedia Bumbu Nusantara")
+    
+    col_ens1, col_ens2, col_ens3 = st.columns([1, 2, 1])
+    with col_ens2:
+        pilihan = st.selectbox("Pilih Bumbu", sorted(SPICE_DATA.keys()))
+        
+    if pilihan:
+        info = SPICE_DATA[pilihan]
+        nama_tampil = pilihan.replace("-", " ").title()
+        
+        st.markdown(f"<h2>{nama_tampil}</h2>", unsafe_allow_html=True)
+        
+        c_ens1, c_ens2, c_ens3 = st.columns(3)
+        with c_ens1:
+            st.warning(f"**✨ Manfaat:**\n\n{info['Manfaat']}")
+        with c_ens2:
+            st.info(f"**📦 Cara Penyimpanan:**\n\n{info['Penyimpanan']}")
+        with c_ens3:
+            st.success(f"**🗺️ Habitat Tumbuh:**\n\n{info['Tumbuh']}")

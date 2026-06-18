@@ -1,1 +1,9 @@
-https://huggingface.co/spaces/LordHoca/Deteksi_bumbu_nusantara
+-- Deteksi Bumbu Nusantara --
+our team :
+- Rama Afriansyah - 15240098
+- Dzakmal Ardhan - 15240271
+- Fauzan Fadhilah Hidayat - 15240205
+- Juan Veron Sihombing - 15240081
+- Alik Wannandi - 15240008
+
+link apk : https://huggingface.co/spaces/LordHoca/Deteksi_bumbu_nusantara

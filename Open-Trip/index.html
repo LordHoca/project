@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8faf8" />
+  <meta name="description" content="Temukan open trip Pulau Seribu bersama RFA Trip. Pilih Pulau Pramuka, Tidung, atau Pari dan nikmati liburan bahari yang mudah direncanakan." />
+  <title>RFA Trip — Open Trip Pulau Seribu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-progress" aria-hidden="true"></div>
+  <header class="site-header" id="top">
+    <nav class="nav-wrap" aria-label="Navigasi utama">
+      <a class="brand" href="#top" aria-label="RFA Trip — Beranda">
+        <span class="brand-mark">RFA</span>
+        <span>RFA TRIP PULAU SERIBU<small>ISLANDS, MADE EASY</small></span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#top">Beranda</a>
+        <a href="#paket">Paket Trip</a>
+        <a href="#kenapa-kami">Kenapa RFA</a>
+        <a href="#cerita">Galeri</a>
+      </div>
+      <div class="nav-actions">
+        <label class="search-box" aria-label="Cari destinasi">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.2 4.2"/></svg>
+          <input id="packageSearch" type="search" placeholder="Cari destinasi..." autocomplete="off" />
+        </label>
+        <button class="btn btn-dark nav-book" data-book-open type="button">Book Now <span aria-hidden="true">↗</span></button>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="navLinks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-wrap" aria-labelledby="hero-title">
+      <div class="hero">
+        <img class="hero__image" src="https://www.agoda.com/wp-content/uploads/2024/07/Jakarta-thousand-islands-featured.jpg" onerror="this.onerror=null;this.src='assets/hero-fallback.jpg'" alt="Perairan jernih berwarna turquoise di antara pulau-pulau hijau di Kepulauan Seribu" />
+        <div class="hero-content">
+          <div class="eyebrow"><span class="dot"></span> OPEN TRIP · KEPULAUAN SERIBU</div>
+          <h1 id="hero-title">Laut biru,<br />cerita <em>baru.</em></h1>
+          <p class="hero-copy">Tinggalkan rutinitas sejenak. Temukan pantai yang tenang, air sebening kristal, dan momen seru di pulau-pulau cantik dekat Jakarta.</p>
+          <div class="hero-actions">
+            <a class="btn btn-light" href="#paket">Jelajahi Paket <span aria-hidden="true">↘</span></a>
+            <a class="btn btn-outline" href="#cerita">Lihat Keseruannya <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-note">
+            <span class="avatar-stack" aria-hidden="true"><span>R</span><span>F</span><span>A</span></span>
+            <span>Teman perjalanan untuk <strong>weekend yang berbeda.</strong></span>
+          </div>
+        </div>
+        <div class="hero-corner" aria-label="RFA Trip">RFA<small>TRIP</small></div>
+        <div class="hero-meta" aria-hidden="true">
+          <span class="meta-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18l-2.3-6H7.2L3 17Z"/><path d="M8 11V6h5v5M5 20h14"/></svg> Island hopping</span>
+          <span class="meta-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Weekend escape</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-strip reveal" aria-label="Keunggulan RFA Trip">
+      <div class="trust-item">
+        <span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7v5c0 4.5-3.2 7.5-8 9-4.8-1.5-8-4.5-8-9V7l8-4Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg></span>
+        <span><strong>Trip lebih terarah</strong><small>Alur perjalanan dibuat jelas</small></span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg></span>
+        <span><strong>Destinasi pilihan</strong><small>Pulau dengan karakter unik</small></span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5 15.5 3 21 5v13.5L8.5 21 3 19.5V7.5Z"/><path d="m8.5 5 0 16M15.5 3v16"/></svg></span>
+        <span><strong>Harga transparan</strong><small>Mulai dari harga yang tertera</small></span>
+      </div>
+    </section>
+
+    <section class="section" id="paket" aria-labelledby="packages-title">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-kicker">DESTINASI PILIHAN</p>
+          <h2 id="packages-title">Temukan pulau<br />favoritmu.</h2>
+          <p>Tiga cara berbeda untuk menikmati Kepulauan Seribu. Pilih suasana yang paling cocok dengan cerita liburanmu.</p>
+        </div>
+        <a href="#booking-cta" class="head-link">Rencanakan trip <span class="arrow-circle"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      </div>
+      <div class="package-grid" id="packageGrid">
+        <article class="package-card reveal" data-destination="Pulau Pramuka" data-search="pramuka konservasi penyu snorkeling laut">
+          <div class="card-image-wrap">
+            <img class="card-image" src="https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit19201280gsm/events/2021/02/08/343502a5-47e2-44a7-b1df-90be92b56f42-1612762957424-1c94a38aab3e460ec592918f2f5403d5.jpg" onerror="this.onerror=null;this.src='assets/pramuka-fallback.jpg'" alt="Dermaga dan perahu di perairan hijau Pulau Pramuka" loading="lazy" />
+            <span class="card-label"><span></span> Alam & edukasi</span><span class="card-number">01 / 03</span>
+          </div>
+          <div class="card-body">
+            <div class="card-topline"><div><h3>Pulau Pramuka</h3><div class="card-location"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg>Kepulauan Seribu Utara</div></div><div class="price"><small>Mulai dari</small><strong>Rp 600.000</strong><em>/ orang</em></div></div>
+            <p class="card-desc">Jelajahi laut biru dan sisi alam pulau yang lebih dekat. Pas untuk kamu yang suka aktivitas bahari dan wisata edukatif.</p>
+            <ul class="feature-list"><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Spot snorkeling pilihan</li><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Wisata konservasi penyu</li><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Jelajah pesisir</li></ul>
+            <div class="card-footer"><button class="btn btn-sea" type="button" data-book-open data-destination="Pulau Pramuka">Lihat Paket <span aria-hidden="true">↗</span></button><button class="card-secondary" type="button" aria-label="Pesan trip Pulau Pramuka" data-book-open data-destination="Pulau Pramuka"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></button></div>
+          </div>
+        </article>
+
+        <article class="package-card reveal delay-1" data-destination="Pulau Tidung" data-search="tidung jembatan cinta sepeda keliling pulau watersport">
+          <div class="card-image-wrap">
+            <img class="card-image" src="https://www.agoda.com/wp-content/uploads/2024/07/Tidung-Island-iconic-Bridge-of-Love.jpg" onerror="this.onerror=null;this.src='assets/tidung-fallback.jpg'" alt="Jembatan ikonik di Pulau Tidung saat matahari terbenam" loading="lazy" />
+            <span class="card-label"><span></span> Paling populer</span><span class="card-number">02 / 03</span>
+          </div>
+          <div class="card-body">
+            <div class="card-topline"><div><h3>Pulau Tidung</h3><div class="card-location"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg>Kepulauan Seribu Selatan</div></div><div class="price"><small>Mulai dari</small><strong>Rp 450.000</strong><em>/ orang</em></div></div>
+            <p class="card-desc">Liburan aktif dengan ikon Jembatan Cinta, suasana kampung pulau yang hangat, dan banyak spot untuk foto.</p>
+            <ul class="feature-list"><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Jembatan Cinta</li><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Bersepeda keliling pulau</li><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Aktivitas air pilihan</li></ul>
+            <div class="card-footer"><button class="btn btn-sea" type="button" data-book-open data-destination="Pulau Tidung">Lihat Paket <span aria-hidden="true">↗</span></button><button class="card-secondary" type="button" aria-label="Pesan trip Pulau Tidung" data-book-open data-destination="Pulau Tidung"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></button></div>
+          </div>
+        </article>
+
+        <article class="package-card reveal delay-2" data-destination="Pulau Pari" data-search="pari pantai pasir perawan snorkeling terumbu karang fotografi">
+          <div class="card-image-wrap">
+            <img class="card-image" src="https://travelbuddies.co.id/_next/image?q=75&url=https%3A%2F%2Fapi.travelbuddies.co.id%2Fuploads%2FWhatsApp+Image+2026-01-02+at+3.49.05+PM+%281%29.jpeg&w=750" onerror="this.onerror=null;this.src='assets/pari-fallback.jpg'" alt="Garis pantai pasir putih dan air biru kehijauan Pulau Pari" loading="lazy" />
+            <span class="card-label"><span></span> Pantai & santai</span><span class="card-number">03 / 03</span>
+          </div>
+          <div class="card-body">
+            <div class="card-topline"><div><h3>Pulau Pari</h3><div class="card-location"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg>Kepulauan Seribu Selatan</div></div><div class="price"><small>Mulai dari</small><strong>Rp 650.000</strong><em>/ orang</em></div></div>
+            <p class="card-desc">Cari sudut pantai favoritmu, berenang di laut jernih, dan nikmati tempo liburan yang lebih santai.</p>
+            <ul class="feature-list"><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Pantai Pasir Perawan</li><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Snorkeling terumbu karang</li><li><span class="check"><svg viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6"/></svg></span>Spot foto alam</li></ul>
+            <div class="card-footer"><button class="btn btn-sea" type="button" data-book-open data-destination="Pulau Pari">Lihat Paket <span aria-hidden="true">↗</span></button><button class="card-secondary" type="button" aria-label="Pesan trip Pulau Pari" data-book-open data-destination="Pulau Pari"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></button></div>
+          </div>
+        </article>
+        <div class="empty-state" id="emptyState">Destinasi tidak ditemukan. Coba cari “Tidung”, “Pramuka”, atau “Pari”.</div>
+      </div>
+      <p class="form-hint" style="margin:18px 0 0;">* Harga merupakan harga awal sesuai contoh desain dan perlu dikonfirmasi untuk tanggal, fasilitas, serta ketersediaan terbaru.</p>
+    </section>
+
+    <section class="why-section" id="kenapa-kami" aria-labelledby="why-title">
+      <div class="why-shell reveal">
+        <div class="why-intro">
+          <p class="section-kicker">BEBAS RIBET, FULL MOMENT</p>
+          <h2 id="why-title">Why travel with<br />RFA Trip?</h2>
+          <p>Lebih sedikit repot merencanakan, lebih banyak waktu untuk menikmati laut dan menciptakan cerita baru.</p>
+        </div>
+        <div class="benefit-grid">
+          <article class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7v10l8 4 8-4V7l-8-4Z"/><path d="m4 7 8 4 8-4M12 11v10M8 5l8 4"/></svg></div><h3>Guide berpengalaman</h3><p>Perjalanan lebih terarah bersama tim trip.</p></article>
+          <article class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 3l9 7v10H3V10Z"/><path d="M9 20v-6h6v6M7 10h.01M12 10h.01M17 10h.01"/></svg></div><h3>Spot pilihan</h3><p>Singgah di tempat yang layak dijelajahi.</p></article>
+          <article class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 12-4 6 3v12l-12 3-6-3V7Z"/><path d="m8 5 0 16M15 3v16M9 12l3 2 4-4"/></svg></div><h3>Harga jelas</h3><p>Mulai dari harga tertera, detail dikonfirmasi.</p></article>
+          <article class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16l-2 10H6L4 7Z"/><path d="M8 7c0-2.5 1.6-4 4-4s4 1.5 4 4M7 21h10M8 17v4M16 17v4"/></svg></div><h3>Snorkeling seru</h3><p>Temukan warna dan kehidupan bawah laut.</p></article>
+          <article class="benefit"><div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="m8 6 1.5-3h5L16 6M12 10l1.2 2.3 2.5.4-1.8 1.8.4 2.5-2.3-1.2-2.3 1.2.4-2.5-1.8-1.8 2.5-.4L12 10Z"/></svg></div><h3>Momen terdokumentasi</h3><p>Abadikan cerita yang ingin kamu bawa pulang.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="moments-section" id="cerita" aria-labelledby="moments-title">
+      <div class="moments-inner">
+        <div class="moments-heading reveal">
+          <div><p class="section-kicker">ISLAND DIARY</p><h2 id="moments-title">Moments with<br />RFA Trip.</h2></div>
+          <p>Udara laut, air jernih, dan teman perjalanan baru. Bagian terbaik dari liburan adalah cerita yang tercipta di sepanjang jalan.</p>
+        </div>
+        <div class="gallery-grid reveal" id="galleryGrid">
+          <article class="gallery-item"><img src="https://www.agoda.com/wp-content/uploads/2024/07/Jakarta-thousand-islands-featured.jpg" onerror="this.onerror=null;this.src='assets/moments-fallback.jpg'" alt="Pemandangan laut turquoise dari udara" loading="lazy" /><div class="gallery-caption"><small>01 · The blue route</small><h3>Jalan-jalan di atas laut.</h3></div></article>
+          <article class="gallery-item"><img src="https://www.agoda.com/wp-content/uploads/2024/07/Tidung-Island-iconic-Bridge-of-Love.jpg" onerror="this.onerror=null;this.src='assets/tidung-fallback.jpg'" alt="Jembatan di Pulau Tidung saat senja" loading="lazy" /><div class="gallery-caption"><small>02 · Golden hour</small><h3>Golden-hour views.</h3></div></article>
+          <article class="gallery-item"><img src="https://travelbuddies.co.id/_next/image?q=75&url=https%3A%2F%2Fapi.travelbuddies.co.id%2Fuploads%2FWhatsApp+Image+2026-01-02+at+3.49.05+PM+%281%29.jpeg&w=750" onerror="this.onerror=null;this.src='assets/pari-fallback.jpg'" alt="Pasir putih dan air jernih Pulau Pari" loading="lazy" /><div class="gallery-caption"><small>03 · Shoreline</small><h3>Slow down by the sea.</h3></div></article>
+          <article class="gallery-item"><img src="https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit19201280gsm/events/2021/02/08/343502a5-47e2-44a7-b1df-90be92b56f42-1612762957424-1c94a38aab3e460ec592918f2f5403d5.jpg" onerror="this.onerror=null;this.src='assets/pramuka-fallback.jpg'" alt="Dermaga kecil untuk perjalanan antar pulau" loading="lazy" /><div class="gallery-caption"><small>04 · Little adventures</small><h3>Every island has a story.</h3></div></article>
+        </div>
+        <div class="gallery-foot"><span>Tempat-tempat kecil, kenangan yang besar.</span><div class="gallery-controls"><button class="round-btn" id="galleryPrev" type="button" aria-label="Pilih foto sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button><button class="round-btn" id="galleryNext" type="button" aria-label="Pilih foto berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+      </div>
+    </section>
+
+    <section class="faq-section" aria-labelledby="faq-title">
+      <div class="faq-heading reveal"><p class="section-kicker">SEBELUM BERANGKAT</p><h2 id="faq-title">Ada yang ingin<br />kamu tanyakan?</h2><p>Beberapa hal penting untuk membantu kamu menyiapkan open trip dengan lebih nyaman.</p></div>
+      <div class="faq-list reveal">
+        <div class="faq-item open"><button class="faq-question" type="button" aria-expanded="true">Apa itu open trip? <span class="faq-plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-answer"><div><p>Open trip adalah perjalanan bersama peserta lain dalam jadwal yang ditentukan. Kamu bisa mendaftar sendiri atau bersama teman, kemudian detail keberangkatan dikonfirmasi oleh tim penyelenggara.</p></div></div></div>
+        <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false">Apa saja yang termasuk dalam harga paket? <span class="faq-plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-answer"><div><p>Fasilitas dapat berbeda untuk setiap pulau dan tanggal. Sebelum membayar, pastikan tim mengonfirmasi transportasi kapal, tiket masuk, akomodasi bila ada, konsumsi, aktivitas, dan biaya lain yang termasuk maupun tidak termasuk.</p></div></div></div>
+        <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false">Bagaimana cara memilih tanggal keberangkatan? <span class="faq-plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-answer"><div><p>Pilih tanggal yang kamu inginkan di formulir booking. Tanggal tersebut masih berupa permintaan hingga tim mengonfirmasi ketersediaan kursi, titik kumpul, dan jadwal kapal.</p></div></div></div>
+        <div class="faq-item"><button class="faq-question" type="button" aria-expanded="false">Apakah harga bisa berubah? <span class="faq-plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></button><div class="faq-answer"><div><p>Harga yang tampil adalah harga awal sesuai konsep desain. Konfirmasikan harga final, fasilitas, dan kebijakan pembatalan pada penyelenggara sebelum melakukan pembayaran.</p></div></div></div>
+      </div>
+    </section>
+
+    <section class="cta-section" id="booking-cta">
+      <div class="cta-card reveal">
+        <div class="cta-copy"><p class="section-kicker">YOUR NEXT ESCAPE</p><h2>Akhir pekanmu<br />bisa sebiru ini.</h2><p>Pilih pulau, tentukan tanggal, dan mulai rencanakan petualanganmu berikutnya di Kepulauan Seribu.</p></div>
+        <div class="cta-actions"><button type="button" class="btn btn-light" data-book-open>Book Your Trip <span aria-hidden="true">↗</span></button><span class="cta-note">Tanyakan ketersediaan sebelum pembayaran.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand"><a class="brand" href="#top"><span class="brand-mark">RFA</span><span>RFA TRIP PULAU SERIBU<small>ISLANDS, MADE EASY</small></span></a><p>Teman perjalanan untuk menikmati sisi lain Jakarta—lebih dekat dengan laut, alam, dan cerita baru.</p></div>
+        <div class="footer-col"><h4>Jelajahi</h4><a href="#paket">Paket Trip</a><a href="#kenapa-kami">Kenapa RFA</a><a href="#cerita">Galeri Momen</a><a href="#booking-cta">Booking</a></div>
+        <div class="footer-col"><h4>Destinasi</h4><a href="#paket" data-footer-destination="Pulau Pramuka">Pulau Pramuka</a><a href="#paket" data-footer-destination="Pulau Tidung">Pulau Tidung</a><a href="#paket" data-footer-destination="Pulau Pari">Pulau Pari</a></div>
+        <div class="footer-col"><h4>Catatan Trip</h4><p>Harga mulai dari sesuai informasi paket.</p><p>Jadwal & fasilitas harus dikonfirmasi sebelum pembayaran.</p><a href="#faq-title">Baca FAQ ↗</a></div>
+      </div>
+      <div class="footer-bottom"><span>© <span id="yearNow"></span> RFA Trip Pulau Seribu. Website concept.</span><span><a href="#top">Kembali ke atas ↑</a></span></div>
+    </div>
+  </footer>
+
+  <div class="modal-backdrop" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true">
+    <div class="booking-modal">
+      <div class="modal-top"><div><p class="section-kicker">LET'S PLAN YOUR ESCAPE</p><h2 id="modalTitle">Booking trip.</h2><p>Isi detail awalmu. Tanggal dan ketersediaan masih perlu dikonfirmasi oleh tim RFA Trip.</p></div><button class="close-modal" id="closeModal" type="button" aria-label="Tutup formulir booking"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <form class="booking-form" id="bookingForm">
+        <div class="form-field full"><label for="bookingDestination">Pilih destinasi</label><select id="bookingDestination" name="destination" required><option value="">Pilih pulau</option><option value="Pulau Pramuka">Pulau Pramuka — mulai Rp600.000/orang</option><option value="Pulau Tidung">Pulau Tidung — mulai Rp450.000/orang</option><option value="Pulau Pari">Pulau Pari — mulai Rp650.000/orang</option></select></div>
+        <div class="form-field"><label for="bookingDate">Tanggal keberangkatan</label><input id="bookingDate" name="date" type="date" required /></div>
+        <div class="form-field"><label for="bookingPeople">Jumlah peserta</label><select id="bookingPeople" name="people" required><option value="1">1 orang</option><option value="2" selected>2 orang</option><option value="3">3 orang</option><option value="4">4 orang</option><option value="5">5 orang</option><option value="6+">6+ orang</option></select></div>
+        <div class="form-field"><label for="bookingName">Nama pemesan</label><input id="bookingName" name="name" type="text" placeholder="Nama lengkap" autocomplete="name" required /></div>
+        <div class="form-field"><label for="bookingContact">Nomor WhatsApp</label><input id="bookingContact" name="contact" type="tel" placeholder="08xx xxxx xxxx" autocomplete="tel" required /></div>
+        <div class="form-field full"><span class="form-hint">Dengan melanjutkan, kamu meminta informasi dan ketersediaan trip—bukan melakukan pembayaran atau mendapatkan konfirmasi otomatis.</span></div>
+        <button class="btn btn-dark" type="submit">Siapkan Permintaan Booking <span aria-hidden="true">↗</span></button>
+      </form>
+      <div class="booking-result" id="bookingResult" aria-live="polite"><strong>Ringkasan permintaanmu siap</strong><p id="bookingSummary"></p><button class="btn btn-sea" type="button" id="copyBooking">Salin ringkasan</button></div>
+      <p class="modal-footnote">Belum ada pembayaran atau reservasi yang dibuat melalui demo ini.</p>
+    </div>
+  </div>
+  <script src="script.js" defer></script>
+</body>
+</html>
